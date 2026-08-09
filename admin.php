@@ -5,7 +5,7 @@ require_once "conn.php";
 // Later:
 // Check if admin is logged in
 if (!isset($_SESSION['is_admin'])) {
-    header("Location: index.php");
+header("Location: index.php");
     exit;
 }
 ?>
@@ -47,7 +47,9 @@ if (!isset($_SESSION['is_admin'])) {
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
-
+html {
+  scroll-behavior: smooth;
+}
         body {
             background: linear-gradient(135deg, #0f172a, #111827, #0f172a);
             color: var(--text);
@@ -116,7 +118,11 @@ if (!isset($_SESSION['is_admin'])) {
         .main {
             flex: 1;
             padding: 35px;
+            display: flex;
+            flex-direction: column;
             margin-left: 250px;
+            padding: 0 20px ;
+            gap: 30px;
         }
 
         /* ================= Header ================= */
@@ -159,6 +165,7 @@ if (!isset($_SESSION['is_admin'])) {
             border-radius: 20px;
             margin-top: 90px;
             overflow: hidden;
+            max-height: fit-content;
             overflow-y: auto;
             border: 1px solid var(--border);
         }
@@ -435,7 +442,7 @@ if (!isset($_SESSION['is_admin'])) {
         @media(max-width:700px) {
 
             .main {
-                padding: 20px;
+                padding: 0 20px;
             }
 
             header {
@@ -507,7 +514,7 @@ if (!isset($_SESSION['is_admin'])) {
 
             <nav>
 
-                <a href="#" class="active">
+                <a href="#productSection">
                     📦 Products
                 </a>
 
@@ -519,7 +526,7 @@ if (!isset($_SESSION['is_admin'])) {
                     🛒 Orders
                 </a>
 
-                <a href="#">
+                <a href="#userSection">
                     👤 Users
                 </a>
 
@@ -540,7 +547,7 @@ if (!isset($_SESSION['is_admin'])) {
         <!-- Main -->
         <main class="main">
 
-            <header>
+            <header style="background:var(--bg);padding:20px 0;">
 
                 <h1>Product Management</h1>
 
@@ -554,7 +561,7 @@ if (!isset($_SESSION['is_admin'])) {
 
             <!-- Products Table -->
 
-            <section class="tableSection">
+            <section class="tableSection" id="productSection">
 
                 <table>
 
@@ -616,8 +623,61 @@ if (!isset($_SESSION['is_admin'])) {
 
                 </table>
 
+                
             </section>
+            
+            <h1>User Details</h1>
+            <section class="tableSection" style="margin-top:0;" id="userSection">
 
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Password</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="userTable">
+                        <?php
+                        require_once 'conn.php';
+                        $sql = 'SELECT * FROM users where isadmin=0';
+                        $result = $conn->query($sql);
+                        while ($row = $result->fetch_assoc()) {
+                            ?>
+                            <tr class="productItem">
+                                
+                                <td>
+                                    <?= $row['name']; ?>
+                                </td>
+                                <td>
+                                    <?= $row['email']; ?>
+                                </td>
+                                <td>
+                                    $<?= $row['password']; ?>
+                                </td>
+                                <td>                        
+                                        <?= $row['phone']; ?>
+                                </td>
+        
+                                <td>                        
+                                        <?= $row['address']; ?>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                    </tbody>
+
+                </table>
+
+                
+            </section>
         </main>
 
     </div>

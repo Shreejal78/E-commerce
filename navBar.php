@@ -4,11 +4,14 @@ session_start();
 <header>
 
     <div class="logo" onclick="window.location.href = 'index.php';">MyShop</div>
-
+    <div class="searchBar">
+        <input type="search" name="search" id="search" placeholder="Search Item">
+        <button type="submit" id="searchBtn">search</button>
+    </div>
     <nav>
         <a href="index.php">Home</a>
         <?php
-                require_once 'conn.php';
+        require_once 'conn.php';
 
         if (!isset($_SESSION['user_id'])) {
             ?>
