@@ -1,14 +1,8 @@
 <?php
 session_start();
 require_once "conn.php";
-
-// Later:
-// Check if admin is logged in
-if (!isset($_SESSION['is_admin'])) {
-header("Location: index.php");
-    exit;
-}
 ?>
+<?php require_once 'auth.php'; ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -659,7 +653,7 @@ html {
                                     <?= $row['email']; ?>
                                 </td>
                                 <td>
-                                    $<?= $row['password']; ?>
+                                    <?= $row['password']; ?>
                                 </td>
                                 <td>                        
                                         <?= $row['phone']; ?>

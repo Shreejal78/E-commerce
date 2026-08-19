@@ -13,12 +13,14 @@
 
     <?php include_once 'navBar.php'; ?>
     <?php include_once 'loginPopUp.php'; ?>
-
-
+    <div id="addCartAlert">
+        Added to cart successfully!
+    </div>
     <main>
         <div class="product-page">
             <?php
             require_once 'conn.php';
+            $isadmin = $_SESSION['is_admin'];
             $product_id = $_GET['product_id'];
             $sql = "SELECT * FROM products WHERE id=$product_id";
             $result = $conn->query($sql);
@@ -42,15 +44,21 @@
                         <span id="quantity">1</span>
                         <button id="plus" class="inCart">+</button>
                     </div>
+                    <?php
+                    if (!$isadmin) {
+                        ?>
+                        <div class="total">
+                            Total: <span id="totalPrice"></span>
+                        </div>
 
-                    <div class="total">
-                        Total: <span id="totalPrice"></span>
+                        <button class="add-cart inCart" id="addCart">
+                            🛒 Add to Cart
+                        </button>
+
                     </div>
-
-                    <button class="add-cart inCart" id="addCart">
-                        🛒 Add to Cart
-                    </button>
-                </div>
+                    <?php
+                    }
+                    ?>
                 <?php
             }
             ?>
@@ -85,12 +93,11 @@
                 let urls = document.querySelectorAll('.url');
                 document.querySelector(".popup").style.display = "flex";
                 const params = new URLSearchParams(window.location.search).get('product_id');
-                
+
                 urls.forEach(url => {
                     url.value = params;
                 })
-
-                return; // Stops the entire event listener
+                return;
             }
 
             const data = await fetch(
@@ -100,15 +107,29 @@
             console.log(data);
 
             if (data === 'success') {
-                alert('Added to Cart!');
+                showToast("Added to cart successfully!");
+
             } else if (data === 'excessAmount') {
-                alert('Out of stock');
                 document.querySelectorAll('.inCart').forEach(btn => {
                     btn.disabled = true;
                 });
                 e.target.innerText = '🚫 Exceed Stock Limits';
+                alert('out of stock')
             }
         });
+
+
+        const alertBox = document.querySelector("#addCartAlert");
+
+        function showToast(message) {
+            alertBox.textContent = message;
+            alertBox.classList.add("show");
+
+            setTimeout(() => {
+                alertBox.classList.remove("show");
+            }, 2000);
+        }
+
     </script>
 
 </body>

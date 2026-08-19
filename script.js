@@ -1,14 +1,5 @@
-let categoryBtn = document.getElementById("categoryBtn");
-let categoryBox = document.querySelector(".categoryBox");
 let categoryOption = document.querySelectorAll(".categoryOption");
 let productContainer = document.getElementById("products");
-categoryBtn.addEventListener("click", () => {
-  if (categoryBox.style.display == "none") {
-    categoryBox.style.display = "flex";
-  } else {
-    categoryBox.style.display = "none";
-  }
-});
 
 categoryOption.forEach((btn) => {
   btn.addEventListener("click", async () => {
@@ -22,6 +13,7 @@ categoryOption.forEach((btn) => {
       });
       let products = await res.json();
       productContainer.innerHTML = "";
+
       products.forEach((product) => {
         productContainer.innerHTML += `
         <div class="card" onclick="location.href='product.php?product_id=${product.id}'">
@@ -57,6 +49,15 @@ search.addEventListener("input", () => {
     let products = await res.json();
     console.log(products);
     productContainer.innerHTML = "";
+    if (products.length == 0) {
+      productContainer.innerHTML = `
+        <div>
+<h3 style='color:#ffffff;'>${search.value}</h3>
+        <br>
+        <p style='color:#ffffff66;'>0 item found for '${search.value}'</p>
+        </div>
+        `;
+    }
     products.forEach((product) => {
       productContainer.innerHTML += `
         <div class="card" onclick="location.href='product.php?product_id=${product.id}'">
@@ -73,7 +74,6 @@ search.addEventListener("input", () => {
     });
   }, 500);
 });
-
 
 searchBtn.addEventListener("click", async () => {
   let res = await fetch("loadSearch.php", {

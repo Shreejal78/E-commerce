@@ -5,13 +5,12 @@ session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     print_r($_POST);
     $pass = $_POST['password'];
-    $product_id = $_POST['currentUrl'];
+    $product_id = empty($_POST['currentUrl']) ? null : $_POST['currentUrl'];
     $email = $_POST['email'];
     $sql = "SELECT * FROM users WHERE email='$email' AND password='$pass'";
     $result = $conn->query($sql);
     var_dump($result);
     if ($result->num_rows == 1) {
-        echo 'skjdf';
         while ($row = $result->fetch_assoc()) {
             $_SESSION['user_id'] = $row['id'];
             if ($row['isadmin'] == 1) {
@@ -21,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             if (isset($product_id)) {
                 header("location: product.php?product_id=$product_id"); //redirect url
-            }else{
+            } else {
                 header('location: index.php');
             }
         }

@@ -11,9 +11,14 @@
 </head>
 
 <body>
-    
-    <?php include_once 'navBar.php';?>
-    <?php include_once 'loginPopUp.php';?>
+
+    <?php include_once 'navBar.php'; ?>
+    <?php include_once 'loginPopUp.php'; ?>
+    <div class="categoryBox">
+        <p class="categoryOption" data-category="all">All</p>
+        <p class="categoryOption" data-category="phone">Mobiles</p>
+        <p class="categoryOption" data-category="laptop">Laptops</p>
+    </div>
     
     <main>
 
@@ -27,8 +32,8 @@
             $result = $conn->query($sql);
             while ($row = $result->fetch_assoc()) {
                 ?>
-                <div class="card" onclick="location.href='product.php?product_id=<?php echo $row['id'];?>'">
-                    <img src="<?= $row['image'];?>" alt="" loading="lazy">
+                <div class="card" onclick="location.href='product.php?product_id=<?php echo $row['id']; ?>'">
+                    <img src="<?= $row['image']; ?>" alt="" loading="lazy">
                     <div class="card-content">
                         <h2><?php echo $row['name']; ?></h2>
                         <div class="price"><?php echo '$' . $row['price']; ?></div>

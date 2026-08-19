@@ -1,3 +1,5 @@
+
+<?php require_once 'auth.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -42,9 +44,10 @@
 INNER JOIN products
 ON cart.product_id = products.id
 WHERE cart.user_id ='$user_id'";
-
+                $cartEmpty;
                 $result = $conn->query($sql);
                 if ($result->num_rows == 0) {
+                    $cartEmpty = true;
                     ?>
                     <div class="empty-cart">
                         <h2>Your cart is empty.</h2>
@@ -52,6 +55,7 @@ WHERE cart.user_id ='$user_id'";
                     </div>
                     <?php
                 } else {
+                    $cartEmpty = false;
                     while ($row = $result->fetch_assoc()) {
                         ?>
                         <div class="cart-item" data-id="<?= $row['product_id'] ?>">
@@ -86,7 +90,8 @@ WHERE cart.user_id ='$user_id'";
                 ?>
 
             </div>
-
+<?php if(!$cartEmpty){
+    ?>
             <div class="cart-summary">
 
                 <h2>Order Summary</h2>
@@ -113,12 +118,14 @@ WHERE cart.user_id ='$user_id'";
                     <span id="total">$0.00</span>
                 </div>
 
-                <button class="checkout-btn">
+                <button class="checkout-btn" onclick="window.location.href = 'payment.php'">
                     Checkout
                 </button>
 
             </div>
-
+            <?php
+}
+?>
         </div>
 
     </main>

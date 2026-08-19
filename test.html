@@ -1,6 +1,721 @@
-<input type="hidden" name="appel" id="a">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guessing Game</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: #07111f;
+            color: white;
+            padding: 30px;
+        }
+
+        .game {
+            width: min(1000px, 100%);
+            background: #0d1b2e;
+            border: 1px solid #1d3557;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 8px;
+            color: #66b3ff;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #8da9c4;
+            margin-bottom: 25px;
+        }
+
+        /* Setup */
+
+        .setup {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .setup input {
+            width: 150px;
+            padding: 13px;
+            border-radius: 10px;
+            border: 1px solid #29476b;
+            background: #081525;
+            color: white;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .setup input:focus {
+            border-color: #4da6ff;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .start-btn {
+            padding: 13px 22px;
+            border-radius: 10px;
+            background: #1479ff;
+            color: white;
+            font-weight: bold;
+        }
+
+        .start-btn:hover {
+            background: #3590ff;
+            transform: translateY(-2px);
+        }
+
+        /* Stats */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat {
+            background: #091729;
+            border: 1px solid #1d3557;
+            padding: 15px;
+            text-align: center;
+            border-radius: 12px;
+        }
+
+        .stat-label {
+            display: block;
+            color: #718aa5;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: bold;
+            color: #66b3ff;
+        }
+
+        /* Guess */
+
+        .guess-box {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .guess-label {
+            color: #8da9c4;
+            margin-bottom: 5px;
+        }
+
+        #guess {
+            font-size: 55px;
+            font-weight: bold;
+            color: #ffffff;
+            animation: guessAppear 0.4s ease;
+        }
+
+        @keyframes guessAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.7);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Number area */
+
+        .numbers-container {
+            min-height: 180px;
+            padding: 20px;
+            background: #081525;
+            border: 1px solid #1d3557;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .numbers {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .number {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background: #142a43;
+            border: 1px solid #29476b;
+            border-radius: 8px;
+
+            color: #bcd2e8;
+            font-size: 14px;
+
+            transition:
+                opacity 0.5s,
+                transform 0.5s,
+                background 0.3s,
+                border 0.3s;
+        }
+
+        .number.current {
+            background: #1479ff;
+            border-color: #66b3ff;
+            color: white;
+            transform: scale(1.2);
+            box-shadow: 0 0 20px rgba(20, 121, 255, 0.5);
+        }
+
+        /* Eliminated animation */
+
+        .number.eliminating {
+            animation: eliminate 0.6s forwards;
+        }
+
+        @keyframes eliminate {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0);
+            }
+
+            40% {
+                opacity: 0.6;
+                transform: scale(1.2) rotate(5deg);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0) rotate(30deg);
+                filter: blur(5px);
+            }
+        }
+
+        /* Controls */
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .controls button {
+            padding: 14px 25px;
+            border-radius: 10px;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .higher {
+            background: #176b87;
+        }
+
+        .lower {
+            background: #743b8f;
+        }
+
+        .correct {
+            background: #16845b;
+        }
+
+        .controls button:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.15);
+        }
+
+        .controls button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Message */
+
+        #message {
+            text-align: center;
+            min-height: 25px;
+            margin-top: 20px;
+            color: #8da9c4;
+        }
+
+        .success {
+            color: #39d98a !important;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .game {
+                padding: 20px;
+            }
+
+            .setup {
+                flex-direction: column;
+            }
+
+            .setup input {
+                width: 100%;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .controls button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="game">
+
+    <h1>🔮 Number Guesser</h1>
+
+    <p class="subtitle">
+        Think of a number and I'll find it using binary search.
+    </p>
+
+    <!-- Start -->
+
+    <div class="setup">
+
+        <input
+            type="number"
+            id="start"
+            placeholder="Start"
+        >
+
+        <input
+            type="number"
+            id="end"
+            placeholder="End"
+        >
+
+        <button class="start-btn" onclick="startGame()">
+            Start Game
+        </button>
+
+    </div>
+
+
+    <!-- Stats -->
+
+    <div class="stats">
+
+        <div class="stat">
+            <span class="stat-label">ATTEMPTS</span>
+            <span class="stat-value" id="attempts">0</span>
+        </div>
+
+        <div class="stat">
+            <span class="stat-label">REMAINING</span>
+            <span class="stat-value" id="remaining">0</span>
+        </div>
+
+        <div class="stat">
+            <span class="stat-label">RANGE</span>
+            <span class="stat-value" id="range">-</span>
+        </div>
+
+    </div>
+
+
+    <!-- Current Guess -->
+
+    <div class="guess-box">
+
+        <div class="guess-label">
+            My guess is
+        </div>
+
+        <div id="guess">?</div>
+
+    </div>
+
+
+    <!-- Numbers -->
+
+    <div class="numbers-container">
+
+        <div class="numbers" id="numbers"></div>
+
+    </div>
+
+
+    <!-- Controls -->
+
+    <div class="controls">
+
+        <button class="lower" id="lowerBtn" onclick="userAnswer('lower')" disabled>
+            ⬇ Lower
+        </button>
+
+        <button class="correct" id="correctBtn" onclick="userAnswer('correct')" disabled>
+            ✓ Correct
+        </button>
+
+        <button class="higher" id="higherBtn" onclick="userAnswer('higher')" disabled>
+            ⬆ Higher
+        </button>
+
+    </div>
+
+    <div id="message">
+        Enter a range to start.
+    </div>
+
+</div>
 
 
 <script>
-    document.getElementById('a').value = "b";
+
+    let start;
+    let end;
+
+    let currentGuess;
+    let attempts = 0;
+
+    let numbers = [];
+
+    const numbersBox = document.getElementById("numbers");
+    const guessElement = document.getElementById("guess");
+
+    const attemptsElement = document.getElementById("attempts");
+    const remainingElement = document.getElementById("remaining");
+    const rangeElement = document.getElementById("range");
+
+    const message = document.getElementById("message");
+
+    const lowerBtn = document.getElementById("lowerBtn");
+    const higherBtn = document.getElementById("higherBtn");
+    const correctBtn = document.getElementById("correctBtn");
+
+
+    function startGame() {
+
+        start = Number(document.getElementById("start").value);
+        end = Number(document.getElementById("end").value);
+
+        if (!Number.isInteger(start) ||
+            !Number.isInteger(end)) {
+
+            alert("Please enter valid numbers.");
+            return;
+        }
+
+        if (start >= end) {
+
+            alert("Start must be smaller than end.");
+            return;
+        }
+
+
+        // Create all possible numbers
+
+        numbers = [];
+
+        for (let i = start; i <= end; i++) {
+            numbers.push(i);
+        }
+
+        attempts = 0;
+
+        message.textContent =
+            "Think of a number and don't tell me!";
+
+        message.classList.remove("success");
+
+        enableControls();
+
+        renderNumbers();
+
+        makeGuess();
+    }
+
+
+    function renderNumbers() {
+
+        numbersBox.innerHTML = "";
+
+        numbers.forEach(number => {
+
+            const element = document.createElement("div");
+
+            element.className = "number";
+            element.textContent = number;
+
+            element.dataset.number = number;
+
+            numbersBox.appendChild(element);
+        });
+
+        updateStats();
+    }
+
+
+    function makeGuess() {
+
+        if (numbers.length === 0) {
+            return;
+        }
+
+
+        /*
+            Binary Search
+
+            Instead of randomly guessing,
+            choose the middle element.
+        */
+
+        const middle = Math.floor(numbers.length / 2);
+
+        currentGuess = numbers[middle];
+
+        guessElement.textContent = currentGuess;
+
+        // Trigger animation again
+
+        guessElement.style.animation = "none";
+        void guessElement.offsetWidth;
+        guessElement.style.animation = "guessAppear 0.4s ease";
+
+
+        // Highlight current number
+
+        document.querySelectorAll(".number").forEach(element => {
+
+            element.classList.remove("current");
+
+            if (Number(element.dataset.number) === currentGuess) {
+                element.classList.add("current");
+            }
+        });
+
+
+        updateStats();
+    }
+
+
+    function userAnswer(answer) {
+
+        attempts++;
+
+        if (answer === "correct") {
+
+            guessElement.textContent = "🎉";
+
+            message.textContent =
+                `I found your number ${currentGuess} in ${attempts} attempts!`;
+
+            message.classList.add("success");
+
+            disableControls();
+
+            document.querySelectorAll(".number").forEach(element => {
+
+                if (Number(element.dataset.number) === currentGuess) {
+
+                    element.style.transform = "scale(1.5)";
+                    element.style.background = "#16845b";
+                    element.style.borderColor = "#39d98a";
+                }
+            });
+
+            attemptsElement.textContent = attempts;
+
+            return;
+        }
+
+
+        let eliminated = [];
+
+
+        if (answer === "higher") {
+
+            /*
+                User says their number is higher.
+
+                Therefore everything <= currentGuess
+                can be eliminated.
+            */
+
+            eliminated = numbers.filter(
+                number => number <= currentGuess
+            );
+
+            numbers = numbers.filter(
+                number => number > currentGuess
+            );
+
+        }
+
+
+        if (answer === "lower") {
+
+            /*
+                User says their number is lower.
+
+                Therefore everything >= currentGuess
+                can be eliminated.
+            */
+
+            eliminated = numbers.filter(
+                number => number >= currentGuess
+            );
+
+            numbers = numbers.filter(
+                number => number < currentGuess
+            );
+        }
+
+
+        animateElimination(eliminated);
+
+    }
+
+
+    function animateElimination(eliminated) {
+
+        eliminated.forEach((number, index) => {
+
+            const element = document.querySelector(
+                `.number[data-number="${number}"]`
+            );
+
+            if (!element) return;
+
+
+            // Small delay creates a wave effect
+
+            setTimeout(() => {
+
+                element.classList.add("eliminating");
+
+            }, index * 15);
+        });
+
+
+        /*
+            Wait for the elimination animation
+            before generating the next guess.
+        */
+
+        const animationTime =
+            Math.min(eliminated.length * 15, 500) + 600;
+
+
+        setTimeout(() => {
+
+            // Remove eliminated elements
+
+            eliminated.forEach(number => {
+
+                const element = document.querySelector(
+                    `.number[data-number="${number}"]`
+                );
+
+                if (element) {
+                    element.remove();
+                }
+            });
+
+
+            updateStats();
+
+
+            if (numbers.length === 0) {
+
+                message.textContent =
+                    "🤔 Your answers were inconsistent.";
+
+                disableControls();
+
+                return;
+            }
+
+
+            makeGuess();
+
+        }, animationTime);
+    }
+
+
+    function updateStats() {
+
+        attemptsElement.textContent = attempts;
+
+        remainingElement.textContent = numbers.length;
+
+        if (numbers.length > 0) {
+
+            rangeElement.textContent =
+                `${numbers[0]} - ${numbers[numbers.length - 1]}`;
+
+        } else {
+
+            rangeElement.textContent = "-";
+        }
+    }
+
+
+    function enableControls() {
+
+        lowerBtn.disabled = false;
+        higherBtn.disabled = false;
+        correctBtn.disabled = false;
+    }
+
+
+    function disableControls() {
+
+        lowerBtn.disabled = true;
+        higherBtn.disabled = true;
+        correctBtn.disabled = true;
+    }
+
 </script>
+
+</body>
+</html>
